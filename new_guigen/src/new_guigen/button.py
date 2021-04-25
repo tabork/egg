@@ -3,6 +3,9 @@ from pygame.locals import *
 from enum import Enum
 
 
+SHAPES = 4
+
+
 class Shape(Enum):
     CIRCLE = 0
     TRIANGLE = 1
@@ -17,7 +20,7 @@ class DrawFuncs:
 
     @staticmethod
     def draw_circle(screen, color, x, y, width, _height):
-        pygame.draw.circle(screen, color, (x, y), width / 2)
+        pygame.draw.circle(screen, color, (x + width / 2, y + width / 2), width / 2)
 
     @staticmethod
     def draw_triangle(screen, color, x, y, width, height):
@@ -35,21 +38,14 @@ DRAW_MAP = {
     Shape.SQUARE: DrawFuncs.draw_rect,
 }
 
+CUR_ID = 0
+
 
 class Button(object):
-    def __init__(
-        self,
-        *,
-        width,
-        height,
-        color,
-        font,
-        shape,
-        x,
-        y,
-        text,
-        command=lambda: print("Clicked")
-    ):
+    def __init__(self, *, width, height, color, font, shape, x, y, text, command=None):
+        global CUR_ID
+        self.idn = CUR_ID
+        CUR_ID += 1
         self.width = width
         self.height = height
         self.color = color
@@ -67,6 +63,7 @@ class Button(object):
         self.command = command
 
     def draw(self, screen):
+        # print("draw")
         DRAW_MAP[self.shape](
             screen, self.bg_color, self.x, self.y, self.width, self.height
         )
@@ -84,5 +81,5 @@ class Button(object):
         )
 
     def click(self, x, y):
-        if self.in_button(x, y):
-            self.command()
+        if self.command is not None and self.in_button(x, y):
+            self.command(self)
