@@ -14,8 +14,8 @@ class Window(object):
         self.button = Button(
             width=100,
             height=100,
-            color=(255, 255, 255),
-            font=None,
+            color=((255, 255, 255), (0, 0, 0)),
+            font=("Arial", 18),
             shape=Shape.TRIANGLE,
             x=100,
             y=100,

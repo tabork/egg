@@ -53,17 +53,26 @@ class Button(object):
         self.width = width
         self.height = height
         self.color = color
-        self.p_color = pygame.Color(color)
+        self.bg_color = pygame.Color(color[0])
+        self.fg_color = pygame.Color(color[1])
         self.font = font
+        self.p_font = pygame.font.SysFont(self.font[0], self.font[1])
         self.shape = shape
         self.x = x
         self.y = y
         self.text = text
+        self.rendered = self.p_font.render(self.text, True, self.fg_color)
+        self.fw = self.rendered.get_width()
+        self.fh = self.rendered.get_height()
         self.command = command
 
     def draw(self, screen):
         DRAW_MAP[self.shape](
-            screen, self.p_color, self.x, self.y, self.width, self.height
+            screen, self.bg_color, self.x, self.y, self.width, self.height
+        )
+        screen.blit(
+            self.rendered,
+            (self.x + (self.width - self.fw) / 2, self.y + (self.height - self.fh) / 2),
         )
 
     def in_button(self, x, y):
