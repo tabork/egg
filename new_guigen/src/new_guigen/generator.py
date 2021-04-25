@@ -78,7 +78,7 @@ class Generator(object):
                 button_params = []
                 continue
             needs_generated = False
-        print(button_params)
+        # print(button_params)
         return button_params
 
     @staticmethod

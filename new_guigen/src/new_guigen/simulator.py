@@ -6,6 +6,20 @@ from .button import Button, Shape
 from .generator import Generator
 
 
+class Trial(object):
+    def __init__(self, button_params):
+        self.button_params = button_params
+
+    def start(self):
+        self.start_time = time.monotonic()
+
+    def end(self):
+        self.end_time = time.monotonic()
+
+    def duration(self):
+        return self.end_time - self.start_time
+
+
 class Simulator(object):
     # trial_list = []
     def __init__(
@@ -14,14 +28,14 @@ class Simulator(object):
         width=None,
         height=None,
         fill=None,
-        trials=0,
+        num_trials=0,
         num_goals=None,
     ):
         self.visualize = visualize
         self.width = width if width is not None else settings.WIDTH
         self.height = height if height is not None else settings.HEIGHT
         self.fill = fill if fill is not None else settings.FILL
-        self.trials = trials if trials > 0 else settings.TRIALS
+        self.num_trials = num_trials if num_trials > 0 else settings.TRIALS
         self.num_goals = num_goals if num_goals is not None else settings.GOALS
         self.generator = Generator()
         self.goals_found = []
@@ -30,11 +44,12 @@ class Simulator(object):
             self.window = Window(self.width, self.height, self.fill)
 
     def run(self):
-        for trial in range(self.trials):
-            while len(self.goals_found) < self.num_goals and trial != 0:
-                self.window.update()
-                # print("test")
+        self.trials = []
+        for trial in range(self.num_trials):
             button_params = self.generator.generate()
+
+            self.current_trial = Trial(button_params)
+
             buttons = []
             for b in button_params:
                 if b.text == "Goal":
@@ -65,8 +80,14 @@ class Simulator(object):
                         )
                     )
             self.window.set_buttons(buttons)
-            self.start_time = time.monotonic_ns()
+            self.current_trial.start()
             self.goals_found = []
+            while len(self.goals_found) < self.num_goals:
+                self.window.update()
+            self.current_trial.end()
+            self.trials.append(self.current_trial)
+        for t in self.trials:
+            print(f"Duration: {t.duration()}, Params: {t.button_params}")
 
     def goal_clicked(self, btn):
         if btn.idn not in self.goals_found:
