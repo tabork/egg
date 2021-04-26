@@ -1,7 +1,7 @@
 import time
 import json
 
-from new_guigen import settings
+from guigen import settings
 from .window import Window
 from .button import Button, Shape
 from .generator import Generator

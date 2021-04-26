@@ -2,7 +2,7 @@ import random
 
 from collections import namedtuple
 
-from new_guigen import settings
+from guigen import settings
 from .button import Button, Shape, SHAPES
 
 Paramaters = namedtuple("Parameters", "x, y, w, h, color, shape, text")

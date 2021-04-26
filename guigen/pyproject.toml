@@ -1,11 +1,12 @@
 [tool.poetry]
-name = "nngauisr"
+name = "guigen"
 version = "0.1.0"
 description = ""
 authors = ["Tabor Kvanicka <kamakwazee@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+pygame = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
