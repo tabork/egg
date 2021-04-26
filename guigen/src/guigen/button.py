@@ -63,7 +63,6 @@ class Button(object):
         self.command = command
 
     def draw(self, screen):
-        # print("draw")
         DRAW_MAP[self.shape](
             screen, self.bg_color, self.x, self.y, self.width, self.height
         )

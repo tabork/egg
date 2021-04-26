@@ -22,7 +22,6 @@ class Trial(object):
 
 
 class Simulator(object):
-    # trial_list = []
     def __init__(
         self,
         visualize=False,

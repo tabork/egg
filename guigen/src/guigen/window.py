@@ -11,16 +11,6 @@ class Window(object):
         self.fill = pygame.Color(fill)
         pygame.init()
         self.screen = pygame.display.set_mode((self.width, self.height), 0, 0)
-        # self.button = Button(
-        #     width=100,
-        #     height=100,
-        #     color=((255, 255, 255), (0, 0, 0)),
-        #     font=("Arial", 18),
-        #     shape=Shape.TRIANGLE,
-        #     x=100,
-        #     y=100,
-        #     text="text",
-        # )
         self.buttons = []
 
     def set_buttons(self, buttons):

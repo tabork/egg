@@ -58,15 +58,11 @@ class Generator(object):
                             ):
                                 overlapping = True
                                 break
+
                     if overlapping:
-                        # print("overlap")
-                        # print(
-                        #     f"{x}, {y}, {w}, {h}, {shape}, {self.width}, {self.height}"
-                        # )
                         tries += 1
                         continue
-                    # print("no overlap")
-                    # print(f"{x + w}, {y + h}, {self.width}, {self.height}")
+
                     overlap_fixed = True
                     bg = Generator.rand_color()
                     fg = Generator.rand_color()
@@ -78,7 +74,7 @@ class Generator(object):
                 button_params = []
                 continue
             needs_generated = False
-        # print(button_params)
+
         return button_params
 
     @staticmethod
