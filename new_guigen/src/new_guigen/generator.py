@@ -5,7 +5,7 @@ from collections import namedtuple
 from new_guigen import settings
 from .button import Button, Shape, SHAPES
 
-Paramaters = namedtuple("Parameters", ["x", "y", "w", "h", "color", "shape", "text"])
+Paramaters = namedtuple("Parameters", "x, y, w, h, color, shape, text")
 
 MIN_BUTTON_WIDTH = 55
 MIN_BUTTON_HEIGHT = 20

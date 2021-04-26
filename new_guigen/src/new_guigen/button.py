@@ -1,12 +1,12 @@
 import pygame
 from pygame.locals import *
-from enum import Enum
+from enum import IntEnum
 
 
 SHAPES = 4
 
 
-class Shape(Enum):
+class Shape(IntEnum):
     CIRCLE = 0
     TRIANGLE = 1
     RECTANGLE = 2

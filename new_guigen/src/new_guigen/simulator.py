@@ -1,4 +1,5 @@
 import time
+import json
 
 from new_guigen import settings
 from .window import Window
@@ -88,6 +89,30 @@ class Simulator(object):
             self.trials.append(self.current_trial)
         for t in self.trials:
             print(f"Duration: {t.duration()}, Params: {t.button_params}")
+
+    def output_results(self, filename):
+        d = []
+        for trial in self.trials:
+            params = trial.button_params
+            btns = []
+
+            for btn in params:
+                color = btn.color
+                fg = {"r": color[0][0], "g": color[0][1], "b": color[0][2]}
+                bg = {"r": color[1][0], "g": color[1][1], "b": color[1][2]}
+                btns.append(
+                    {
+                        "x": btn.x,
+                        "y": btn.y,
+                        "width": btn.w,
+                        "height": btn.h,
+                        "colors": {"fg": fg, "bg": bg},
+                        "shape": btn.shape,
+                    }
+                )
+            d.append({"Buttons": btns, "Time": trial.duration()})
+        with open(filename, "w+") as f:
+            json.dump({"Trials": d}, f)
 
     def goal_clicked(self, btn):
         if btn.idn not in self.goals_found:

@@ -7,3 +7,4 @@ if __name__ == "__main__":
     #     window.update()
     simulator = Simulator(visualize=True)
     simulator.run()
+    simulator.output_results("output/test.json")
