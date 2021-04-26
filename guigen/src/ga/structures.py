@@ -47,6 +47,10 @@ class ButtonRepr(object):
     def __repr__(self):
         return repr(self.button_repr)
 
+    def __iter__(self):
+        for elem in self.button_repr_values:
+            yield elem
+
     def get_by_key(self, key):
         if key not in self.button_repr:
             raise KeyError(f"{key} not in ButtonRepr")
@@ -83,12 +87,15 @@ class UIRepr(object):
                     bg[0],
                     bg[1],
                     bg[2],
-                    btn.shape,
+                    int(btn.shape),
                 )
             )
 
         self.btn_size = len(self.button_reprs[0])
         self.size = self.num_buttons * self.btn_size
+
+    def matrix(self):
+        return [list(btn) for btn in self.button_reprs]
 
     def __len__(self):
         return self.size
@@ -115,3 +122,8 @@ class UIRepr(object):
 
     def __repr__(self):
         return "\n".join([repr(btn) for btn in self.button_reprs])
+
+    def __iter__(self):
+        for oelem in self.button_reprs:
+            for elem in oelem:
+                yield elem
