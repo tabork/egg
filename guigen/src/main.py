@@ -1,4 +1,9 @@
-from guigen.simulator import Simulator
+#
+
+# from guigen.generator import Generator
+
+
+from enum import Enum
 
 import os
 import random
@@ -6,18 +11,100 @@ import sys
 import time
 
 
+class Mode(Enum):
+    SIMULATION = 0
+    GANN = 1
+    VISUALIZE = 2
+    ERROR = 2
+
+
+ModeMap = {"sim": Mode.SIMULATION, "gann": Mode.GANN, "vis": Mode.VISUALIZE}
+
+
+def get_dirs(argv, has_input=False):
+    if has_input:
+        if len(argv) != 4:
+            print(f"Input and output directories required if running in 'gann' mode\n")
+            sys.exit(1)
+
+        output_dirs = [argv[2], argv[3]]
+    else:
+        if len(argv) != 3:
+            print(f"Output directory required if running in 'sim' mode")
+            sys.exit(1)
+
+        output_dirs = [
+            argv[2],
+        ]
+
+    for output_dir in output_dirs:
+        if not os.path.isdir(output_dir):
+            print(f"Directory {output_dir} does not exist")
+            sys.exit(1)
+
+    return output_dirs
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} [output directory]\n")
+    if len(sys.argv) < 2:
+        print(
+            f"\nUsage: {sys.argv[0]} [mode] ('gann': input dir) ('sim' or 'gann': output dir)\n"
+        )
+        print(f"Example: {sys.argv[0]} gann training output\n")
+        print(f"Usage: {sys.argv[0]} sim training\n")
+        print(f"Usage: {sys.argv[0]} vis\n\n")
         sys.exit(1)
 
-    if not os.path.isdir(sys.argv[1]):
-        print(f"Directory {sys.argv[1]} does not exist")
+    if sys.argv[1] in ModeMap:
+        mode = ModeMap[sys.argv[1]]
+    else:
+        mode = Mode.ERROR
+
+    if mode == Mode.ERROR:
+        print(f"Mode must be 'sim' 'gann' or 'vis'")
         sys.exit(1)
 
     timestr = time.strftime("%m%d%Y-%H%M%S")
 
-    simulator = Simulator(visualize=True)
-    simulator.run()
+    if mode == Mode.SIMULATION:
+        output_dir = get_dir(sys.argv)[0]
 
-    simulator.output_results(os.path.join(sys.argv[1], f"results_{timestr}.json"))
+        # Needed import for sim
+        from guigen.simulator import Simulator
+
+        simulator = Simulator(visualize=True)
+        simulator.run()
+
+        simulator.output_results(
+            os.path.join(output_dir, f"sim_results_{timestr}.json")
+        )
+    elif mode == Mode.GANN:
+        dirs = get_dirs(sys.argv, True)
+
+        # Needed imports for running the NN and GA
+        from ga.ga import GA
+        from nn.nn import NeuralNetwork
+
+        input_dir = dirs[0]
+        output_dir = dirs[1]
+
+        NN = NeuralNetwork(input_dir)
+        accuracy = NN.fit()
+        print(f"Accuracy is estimated at {accuracy}%")
+
+        ts = sys.maxsize
+        ga = GA(results_file=os.path.join(output_dir, f"ga_results_{timestr}.json"))
+
+        while (data := ga.ga_step(ts)) is not None:
+            ts = NN.predict(list(data))
+            # print(ts)
+
+        # gen = Generator()
+
+        # while True:
+        #     pred = NN.predict(list(UIRepr(buttons=gen.generate())))
+        #     print(f"Prediction: {pred} s")
+        #     time.sleep(3)
+    else:
+        # TODO Visualization
+        pass

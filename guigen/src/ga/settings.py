@@ -1,4 +1,3 @@
-# TODO These need real vals
 POPULATION_SIZE = 20
 MUTATION_RATE = 0.01
 SUB_MUTATION_RATE = 0.1

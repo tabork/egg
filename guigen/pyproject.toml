@@ -8,6 +8,9 @@ authors = ["Tabor Kvanicka <kamakwazee@gmail.com>"]
 python = "^3.8"
 pygame = "^2.0.1"
 pandas = "^1.2.4"
+keras = "^2.4.3"
+sklearn = "^0.0"
+tensorflow = "^2.4.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

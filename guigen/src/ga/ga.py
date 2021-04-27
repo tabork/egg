@@ -54,6 +54,7 @@ class GA(object):
             }
 
     def ga_step(self, last_timestamp):
+        print(self.current_iteration)
         if self.current_index == 0 and self.current_iteration != 0:
             self.last_iteration_set = self.population.chroms[0].fitness
             if self.verbose:

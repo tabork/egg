@@ -148,8 +148,6 @@ class UIRepr(object):
         )
 
         if goal_count != settings.GOALS:
-            print("\n\t NEEDS CORRECTION\n")
-            print(self)
             for i in range(goal_index, self.size, ButtonRepr.NUM_FIELDS):
                 if goal_count < settings.GOALS:
                     if self[i] == 0:
@@ -163,7 +161,6 @@ class UIRepr(object):
                             goal_count -= 1
                 else:
                     break
-            print(self)
 
     def output(self):
         return [b.button_repr for b in self.button_reprs]
