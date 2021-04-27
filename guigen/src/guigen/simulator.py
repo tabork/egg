@@ -86,8 +86,6 @@ class Simulator(object):
                 self.window.update()
             self.current_trial.end()
             self.trials.append(self.current_trial)
-        for t in self.trials:
-            print(f"Duration: {t.duration()}, Params: {t.button_params}")
 
     def output_results(self, filename):
         d = []
