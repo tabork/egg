@@ -77,6 +77,24 @@ class Generator(object):
 
         return button_params
 
+    def get_random(self, idx, data):
+        key = data.get_key(idx)
+        btn = data.get_button(idx)
+        if key == "width":
+            return random.randint(MIN_BUTTON_WIDTH, self.width - btn.get_by_key("x"))
+        elif key == "height":
+            return random.randint(MIN_BUTTON_HEIGHT, self.height - btn.get_by_key("y"))
+        elif key == "x":
+            return random.randrange(0, self.width - MIN_BUTTON_WIDTH)
+        elif key == "y":
+            return random.randrange(0, self.height - MIN_BUTTON_HEIGHT)
+        elif key in ["fgr", "fgg", "fgb", "bgr", "bgg", "bgb"]:
+            return random.randint(0, 255)
+        elif key == "shape":
+            return random.randrange(0, SHAPES)
+        elif key == "goal":
+            return random.randint(0, 1)
+
     @staticmethod
     def check_overlapping(x1, y1, w1, h1, x2, y2, w2, h2):
         return not (

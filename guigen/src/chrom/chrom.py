@@ -32,6 +32,7 @@ class Chromosome:
         crossover_method=None,
         mutation_method=None,
         fitness_function=None,
+        correction_function=None,
         fitness=None,
     ):
         """Initializes chromosome
@@ -45,12 +46,14 @@ class Chromosome:
             crossover_method             -- Function for performing crossover. (default: {None})
             mutation_method              -- Function for performing mutation. (default: {None})
             fitness_function             -- Function for calculating fitness. (default: {None})
+            correction_function          -- Function for ensuring the chromosome is valid data (default: {None})
         """
 
         self.data = data
         self.crossover_method = crossover_method
         self.mutation_method = mutation_method
         self.fitness_function = fitness_function
+        self.correction_function = correction_function
         if fitness_function is None and fitness is None:
             self.fitness = (
                 sys.maxsize
@@ -67,6 +70,7 @@ class Chromosome:
             crossover_method=chrom.crossover_method,
             mutation_method=chrom.mutation_method,
             fitness_function=chrom.fitness_function,
+            correction_function=chrom.correction_function,
             fitness=chrom.fitness,
         )
 
@@ -119,6 +123,10 @@ class Chromosome:
                 self.fitness_function,
             ),
         )
+
+    def correct(self):
+        if self.correction_function is not None:
+            return Chromosome(self.correction_function(self.data))
 
     def mutate(self):
         """Mutation operator

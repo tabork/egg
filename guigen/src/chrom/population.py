@@ -80,6 +80,10 @@ class Population:
 
         self.chroms.sort(key=lambda c: c.fitness)
 
+    def perform_corrections(self):
+        for chrom in self.chroms:
+            chrom.correct()
+
     def perform_kicks(self, kick_rate, max_attempts, on_elite=False):
         atmin = False
         if not on_elite:

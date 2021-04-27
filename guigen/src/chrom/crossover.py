@@ -34,8 +34,8 @@ def uniform_crossover(chrom1, chrom2, U=None):
         U = random_bitstring(l)
         # print(U)
 
-    child1 = [""] * l
-    child2 = [""] * l
+    child1 = [None] * l
+    child2 = [None] * l
 
     for i in range(l):
         if U[i] == "1":
@@ -44,7 +44,9 @@ def uniform_crossover(chrom1, chrom2, U=None):
         else:
             child1[i] = chrom2[i]
             child2[i] = chrom1[i]
-    return child1, child2
+
+    ChromClass = type(chrom1)
+    return ChromClass(*child1), ChromClass(*child2)
 
 
 def single_point_slice(chrom1, chrom2, point=None):
