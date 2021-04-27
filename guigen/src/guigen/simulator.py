@@ -105,6 +105,7 @@ class Simulator(object):
                         "height": btn.h,
                         "colors": {"fg": fg, "bg": bg},
                         "shape": btn.shape,
+                        "text": btn.text,
                     }
                 )
             d.append({"Buttons": btns, "Time": trial.duration()})
