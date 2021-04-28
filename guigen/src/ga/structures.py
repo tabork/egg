@@ -3,7 +3,8 @@ import sys
 
 from collections import namedtuple
 
-from guigen.button import Button
+from guigen.button import Button, SHAPES
+from guigen.generator import MIN_BUTTON_HEIGHT, MIN_BUTTON_WIDTH
 from guigen import settings
 
 ButtonRepr = namedtuple(
@@ -146,8 +147,11 @@ class UIRepr(object):
         goal_count = sum(
             self[i] for i in range(goal_index, self.size, ButtonRepr.NUM_FIELDS)
         )
+        # print(f"Goal count: {goal_count}")
 
         if goal_count != settings.GOALS:
+            # print("Correcting")
+            # print(self)
             for i in range(goal_index, self.size, ButtonRepr.NUM_FIELDS):
                 if goal_count < settings.GOALS:
                     if self[i] == 0:
@@ -164,6 +168,31 @@ class UIRepr(object):
 
     def output(self):
         return [b.button_repr for b in self.button_reprs]
+
+    def normalize(self):
+        normalized = []
+        for i in range(len(self)):
+            key = self.get_key(i)
+            if key == "width":
+                normalized.append(self[i] / float(settings.WIDTH))
+            elif key == "height":
+                normalized.append(self[i] / float(settings.HEIGHT))
+            elif key == "x":
+                normalized.append(self[i] / float(settings.WIDTH - MIN_BUTTON_WIDTH))
+                # return random.randrange(0, self.width - MIN_BUTTON_WIDTH)
+            elif key == "y":
+                normalized.append(self[i] / float(settings.HEIGHT - MIN_BUTTON_HEIGHT))
+                # return random.randrange(0, self.height - MIN_BUTTON_HEIGHT)
+            elif key in ["fgr", "fgg", "fgb", "bgr", "bgg", "bgb"]:
+                normalized.append(self[i] / float(255))
+                # return random.randint(0, 255)
+            elif key == "shape":
+                normalized.append(self[i] / float(SHAPES))
+                # return random.randrange(0, SHAPES)
+            elif key == "goal":
+                normalized.append(float(self[i]))
+                # return random.randint(0, 1)
+        return normalized
 
     def __len__(self):
         return self.size

@@ -5,6 +5,7 @@
 
 from enum import Enum
 
+import json
 import os
 import random
 import sys
@@ -15,10 +16,10 @@ class Mode(Enum):
     SIMULATION = 0
     GANN = 1
     VISUALIZE = 2
-    ERROR = 2
+    ERROR = 3
 
 
-ModeMap = {"sim": Mode.SIMULATION, "gann": Mode.GANN, "vis": Mode.VISUALIZE}
+MODE_MAP = {"sim": Mode.SIMULATION, "gann": Mode.GANN, "vis": Mode.VISUALIZE}
 
 
 def get_dirs(argv, has_input=False):
@@ -45,18 +46,44 @@ def get_dirs(argv, has_input=False):
     return output_dirs
 
 
+def read_winner_as_buttons(filename):
+    from guigen.button import Button
+
+    with open(filename, "r") as f:
+        d = json.load(f)
+
+    btns = d["Buttons"]
+
+    buttons = []
+    for b in btns:
+        buttons.append(
+            Button(
+                width=b["width"],
+                height=b["height"],
+                x=b["x"],
+                y=b["y"],
+                color=((b["fgr"], b["fgg"], b["fgb"]), (b["bgr"], b["bgg"], b["bgb"])),
+                font=("Arial", 12),
+                shape=b["shape"],
+                text=("Goal" if b["goal"] == 1 else "Button"),
+            )
+        )
+
+    return buttons
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         print(
-            f"\nUsage: {sys.argv[0]} [mode] ('gann': input dir) ('sim' or 'gann': output dir)\n"
+            f"\nUsage: {sys.argv[0]} [mode] ('gann': input dir) ('sim' or 'gann': output dir) ('vis': input file)\n"
         )
         print(f"Example: {sys.argv[0]} gann training output\n")
-        print(f"Usage: {sys.argv[0]} sim training\n")
-        print(f"Usage: {sys.argv[0]} vis\n\n")
+        print(f"Example: {sys.argv[0]} sim training\n")
+        print(f"Example: {sys.argv[0]} vis\n\n")
         sys.exit(1)
 
-    if sys.argv[1] in ModeMap:
-        mode = ModeMap[sys.argv[1]]
+    if sys.argv[1] in MODE_MAP:
+        mode = MODE_MAP[sys.argv[1]]
     else:
         mode = Mode.ERROR
 
@@ -67,7 +94,7 @@ if __name__ == "__main__":
     timestr = time.strftime("%m%d%Y-%H%M%S")
 
     if mode == Mode.SIMULATION:
-        output_dir = get_dir(sys.argv)[0]
+        output_dir = get_dirs(sys.argv)[0]
 
         # Needed import for sim
         from guigen.simulator import Simulator
@@ -90,14 +117,18 @@ if __name__ == "__main__":
 
         NN = NeuralNetwork(input_dir)
         accuracy = NN.fit()
-        print(f"Accuracy is estimated at {accuracy}%")
+        print(f"Accuracy is estimated at {accuracy}")
 
         ts = sys.maxsize
-        ga = GA(results_file=os.path.join(output_dir, f"ga_results_{timestr}.json"))
+        ga = GA(results_file=os.path.join(output_dir, f"ga_results_{timestr}.csv"))
 
         while (data := ga.ga_step(ts)) is not None:
-            ts = NN.predict(list(data))
+            # print(data)
+            ts = NN.predict(data)
             # print(ts)
+            # print(ts)
+
+        ga.output_winner(os.path.join(output_dir, f"ga_winner_{timestr}.json"))
 
         # gen = Generator()
 
@@ -106,5 +137,15 @@ if __name__ == "__main__":
         #     print(f"Prediction: {pred} s")
         #     time.sleep(3)
     else:
-        # TODO Visualization
-        pass
+        if not os.path.isfile(sys.argv[2]):
+            print(f"{sys.argv[2]} not found")
+            sys.exit(1)
+
+        from guigen.simulator import Window
+        from guigen import settings
+
+        window = Window(settings.WIDTH, settings.HEIGHT, settings.FILL)
+        window.set_buttons(read_winner_as_buttons(sys.argv[2]))
+
+        while True:
+            window.update()

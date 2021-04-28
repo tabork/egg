@@ -34,6 +34,10 @@ class Population:
             f"Population([\n\t" + ",\n\t".join([repr(c) for c in self.chroms]) + "\n])"
         )
 
+    def sort(self):
+        if self.chroms is not None:
+            self.chroms.sort(key=lambda c: c.fitness)
+
     def select(self):
         """Selects a chromosome based on selection method"""
 

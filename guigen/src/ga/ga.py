@@ -53,12 +53,18 @@ class GA(object):
                 "Min Iteration": [],
             }
 
-    def ga_step(self, last_timestamp):
-        print(self.current_iteration)
-        if self.current_index == 0 and self.current_iteration != 0:
+    def ga_step(self, last_timestamps):
+        # print(self.current_iteration)
+        if self.current_iteration != 0:
+            for i, c in enumerate(self.population.chroms):
+                c.data.set_timestamp(last_timestamps[i])
+                c.calc_fitness()
+
+            self.population.sort()
+
             self.last_iteration_set = self.population.chroms[0].fitness
             if self.verbose:
-                if self.current_iteration % 1000 == 0:
+                if self.current_iteration % 100 == 0:
                     print(
                         f"Iteration: {self.current_iteration}, Fitness: {self.population.chroms[0].fitness}, Minimum: {self.least}, Min Iteration: {self.least_iteration}"
                     )
@@ -77,15 +83,8 @@ class GA(object):
             # print("Perfomring mutations")
             self.population.perform_mutations(settings.MUTATION_RATE)
             self.population.perform_corrections()
-        elif self.current_index == settings.POPULATION_SIZE - 1:
-            self.current_iteration += 1
-
-        if not (self.current_index == 0 and self.current_iteration == 0):
-            c = self.population.chroms[
-                (self.current_index - 1) % settings.POPULATION_SIZE
-            ]
-            c.data.set_timestamp(last_timestamp)
-            c.calc_fitness()
+        # elif self.current_index == settings.POPULATION_SIZE - 1:
+        #     self.current_iteration += 1
 
         if self.current_iteration == settings.MAX_ITERATIONS:
             if self.results_file is not None:
@@ -104,13 +103,12 @@ class GA(object):
                 )
             return None
 
-        self.current_index = (self.current_index + 1) % settings.POPULATION_SIZE
+        self.current_iteration += 1
 
-        return self.population.chroms[
-            (self.current_index - 1) % settings.POPULATION_SIZE
-        ].data
+        return [c.data.normalize() for c in self.population.chroms]
 
     def output_winner(self, filename=None):
+        print(f"Winner:\n{self.population.chroms[0].data}")
         if filename is None:
             print(f"Winner:\n{self.population.chroms[0].data}")
         else:

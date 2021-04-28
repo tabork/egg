@@ -115,12 +115,14 @@ class Chromosome:
                 self.crossover_method,
                 self.mutation_method,
                 self.fitness_function,
+                self.correction_function,
             ),
             Chromosome(
                 child2_data,
                 self.crossover_method,
                 self.mutation_method,
                 self.fitness_function,
+                self.correction_function,
             ),
         )
 

@@ -1,9 +1,18 @@
 import json
 import os
 
+from ga.structures import UIRepr
+
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, BatchNormalization
 from keras.wrappers.scikit_learn import KerasRegressor
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import KFold
+
+from nn import settings
 
 
 class NeuralNetwork(object):
@@ -33,29 +42,58 @@ class NeuralNetwork(object):
         self.dim = len(self.training_inputs[0])
         # print(self.dim)
 
-        self.model = Sequential()
-        self.model.add(Dense(self.dim + 8, input_dim=self.dim, activation="relu"))
-        self.model.add(Dense(1, kernel_initializer="normal"))
-        self.model.compile(
-            loss="mean_squared_error", optimizer="adam", metrics=["accuracy"]
-        )
+        self.model = self.baseline_model()
+
+        # self.estimators = []
+        # self.estimators.append(("standardize", StandardScaler()))
+        # self.estimators.append(
+        #     (
+        #         "mlp",
+        #         KerasRegressor(
+        #             build_fn=self.baseline_model,
+        #             epochs=settings.EPOCHS,
+        #             batch_size=settings.BATCH_SIZE,
+        #             verbose=settings.VERBOSE,
+        #         ),
+        #     )
+        # )
+        # self.pipeline = Pipeline(self.estimators)
+        # self.estimator = KerasRegressor(
+        #     build_fn=self.baseline_model,
+        #     epochs=settings.EPOCHS,
+        #     batch_size=settings.BATCH_SIZE,
+        #     verbose=settings.VERBOSE,
+        # )
+
+        # kfold = KFold(n_splits=10)
+        # results = cross_val_score(
+        #     self.estimator, self.training_inputs, self.training_outputs, cv=kfold
+        # )
+        # print("Standardized: %.2f (%.2f) MSE" % (results.mean(), results.std()))
+
+    def baseline_model(self):
+        model = Sequential()
+        model.add(Dense(self.dim + 8, input_dim=self.dim, activation="relu"))
+        model.add(Dense(1, kernel_initializer="normal"))
+        model.compile(loss="mean_squared_error", optimizer="adam", metrics=["accuracy"])
+        return model
 
     def fit(self):
         self.model.fit(
             self.training_inputs,
             self.training_outputs,
-            epochs=150,
-            batch_size=10,
-            verbose=False,
+            epochs=settings.EPOCHS,
+            batch_size=settings.BATCH_SIZE,
+            verbose=settings.VERBOSE,
         )
         _, accuracy = self.model.evaluate(self.training_inputs, self.training_outputs)
         return accuracy
 
     def predict(self, input_data):
         # print(input_data)
-        return self.model.predict([input_data,])[
-            0
-        ][0]
+        preds = self.model.predict(input_data)
+        return [p[0] for p in preds]
+        # return self.model.predict(input_data).values()
         # return self.model.predict(self.training_inputs)
 
     @staticmethod
@@ -87,7 +125,7 @@ class NeuralNetwork(object):
                         int(b["text"] == "Goal"),
                     ]
                 )
-            param_mats.append(tm)
+            param_mats.append(UIRepr(*tm).normalize())
             times.append(t["Time"])
-
+        # print(param_mats)
         return (param_mats, times)
