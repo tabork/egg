@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "egg"
+version = "0.1.0"
+description = ""
+authors = ["Tabor Kvanicka <ttk164@utulsa.edu>", "Felicity Jackson <fmj6585@utulsa.edu>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pygame = "^2.0.1"
+pandas = "^1.2.4"
+keras = "^2.4.3"
+sklearn = "^0.0"
+tensorflow = "^2.4.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^20.8b1"
+flake8 = "^3.9.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
